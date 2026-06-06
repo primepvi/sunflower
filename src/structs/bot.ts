@@ -3,6 +3,7 @@ import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import type { CommandOptions } from "../utils/command.js";
+import mongoose from "mongoose";
 
 export interface BotOptions {
 	intents: GatewayIntentBits[];
@@ -20,7 +21,17 @@ export class Bot extends Client {
 	public async init() {
 		await this.loadCommands();
 		await this.loadEvents();
+		await this.connectToDatabase();
 		await super.login();
+	}
+
+	private async connectToDatabase() {
+		try {
+			await mongoose.connect(process.env.DATABASE_URL!);
+			console.log("[loader:database] database conectada com sucesso.");
+		} catch {
+			console.log("[loader:database] não foi possível conectar a database.");
+		}
 	}
 
 	private async loadCommands(path = "src/commands") {
