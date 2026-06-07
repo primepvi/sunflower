@@ -11,6 +11,7 @@ import mongoose from "mongoose";
 import type { ComponentOptions } from "../utils/component.js";
 import { FileLoader } from "./file-loader.js";
 import type { EventOptions } from "../utils/event.js";
+import type { ContainerEditor } from "./container-editor.js";
 
 export interface BotOptions {
 	intents: GatewayIntentBits[];
@@ -21,6 +22,8 @@ export class Bot extends Client {
 	public commands = new Collection<string, CommandOptions>();
 	public commandHandlers = new Collection<string, CommandExecute>();
 	public components = new Collection<string, ComponentOptions>();
+
+	public editors = new Collection<string, ContainerEditor>;
 	private fileLoader = new FileLoader();
 
 	public constructor({ intents, token }: BotOptions) {

@@ -1,4 +1,4 @@
-import { Board, type BoardData } from "../schemas/board.js";
+import { Board, type BoardData } from "../schemas/board.schema.js";
 
 export interface BoardManagerCreateInput {
 	guildId: string;

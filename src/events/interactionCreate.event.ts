@@ -33,7 +33,7 @@ export default createEvent({
 			}
 
 			try {
-				await component.execute(interaction as ComponentInteraction<ComponentType>);
+				await component.execute(interaction as ComponentInteraction<ComponentType>, componentArgs);
 			} catch (error) {
 				console.log(error);
 				interaction.reply({
