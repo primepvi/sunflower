@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import type { CommandOptions } from "../utils/command.js";
 import mongoose from "mongoose";
+import type { ComponentOptions } from "../utils/component.js";
 
 export interface BotOptions {
 	intents: GatewayIntentBits[];
@@ -12,6 +13,7 @@ export interface BotOptions {
 
 export class Bot extends Client {
 	public commands = new Collection<string, CommandOptions>();
+	public components = new Collection<string, ComponentOptions>();
 
 	public constructor({ intents, token }: BotOptions) {
 		super({ intents });
@@ -19,6 +21,7 @@ export class Bot extends Client {
 	}
 
 	public async init() {
+		await this.loadComponents();
 		await this.loadCommands();
 		await this.loadEvents();
 		await this.connectToDatabase();
@@ -31,6 +34,15 @@ export class Bot extends Client {
 			console.log("[loader:database] database conectada com sucesso.");
 		} catch {
 			console.log("[loader:database] não foi possível conectar a database.");
+		}
+	}
+
+	private async loadComponents(path = "src/components") {
+		const files = this.loadFiles(path);
+		for (const file of files) {
+			const { default: component } = await import(file);
+			this.components.set(component.name, component);
+			console.log(`[load:component] o componente "${component.name}" foi carregado com sucesso.`);
 		}
 	}
 
