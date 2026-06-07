@@ -45,14 +45,14 @@ export default createEvent({
 		}
 
 		if (interaction.isChatInputCommand()) {
-			const command = bot.commands.get(interaction.commandName);
-			if (!command) {
+			const executeCommand = bot.getCommandHandler(interaction);
+			if (!executeCommand) {
 				interaction.reply({ content: "Não foi possível encontrar esse comando.", flags: ["Ephemeral"] });
 				return;
 			}
 
 			try {
-				await command.execute(interaction);
+				await executeCommand(interaction);
 			} catch (error) {
 				console.log(error);
 				interaction.reply({ content: "Ocorreu um erro ao executar este comando.", flags: ["Ephemeral"] });

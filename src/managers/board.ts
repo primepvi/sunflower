@@ -12,10 +12,10 @@ export interface BoardManagerGetInput {
 
 export class BoardManager {
 	public async create({ guildId, name }: BoardManagerCreateInput) {
-		const existing = await Board.find({ guildId, name });
+		const existing = await Board.findOne({ guildId, name });
 		if (existing) return existing;
 
-		return Board.create({
+		return await Board.create({
 			guildId,
 			name
 		});

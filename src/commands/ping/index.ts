@@ -1,6 +1,6 @@
 import type { ChatInputCommandInteraction } from "discord.js";
-import { createCommand } from "../../utils/command.js";
 import { bot } from "../../bot.js";
+import { createCommand } from "../../utils/command.js";
 
 export default createCommand({
 	name: "ping",
