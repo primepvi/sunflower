@@ -5,7 +5,7 @@ export class ContainerEditor {
 	public cursor = -1;
 	public component: ContainerBuilder;
 
-	public constructor(component?: ContainerBuilder) {
+	public constructor(public name: string, component?: ContainerBuilder) {
 		this.component = component || k.container({
 			color: "Yellow",
 			components: ["Insira seu texto aqui."]

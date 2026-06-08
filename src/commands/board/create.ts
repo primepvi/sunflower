@@ -14,7 +14,7 @@ export default createSubcommand({
 	async execute(interaction: ChatInputCommandInteraction) {
 	        const boardName = interaction.options.getString("name", true);
 
-		const editor = new ContainerEditor();
+		const editor = new ContainerEditor(boardName);
 		bot.editors.set(interaction.user.id, editor);
 
 		const view = new BoardEditorView({

@@ -47,7 +47,12 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 			emoji: e.icon_separator
 		});
 
-		return { components: [container, this.prepareComponentMenu(), k.row(addTextBtn, addSeparatorBtn)] };
+		const finalizeBtn = k.button.success({
+			cid: `bd_finalize/${this.state.user.id}`,
+			label: "Finalizar",
+		});
+
+	  return { components: [container, this.prepareComponentMenu(), k.row(addTextBtn, addSeparatorBtn, finalizeBtn)] };
 	}
 
 	private renderTextDisplayEditPage(): BaseMessageOptions {
