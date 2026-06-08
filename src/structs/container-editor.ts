@@ -1,16 +1,32 @@
 import { ButtonBuilder, ComponentType, ContainerBuilder, SectionBuilder, SeparatorBuilder, ThumbnailBuilder, type ContainerComponentBuilder } from "discord.js";
 import { k } from "kompozr";
 
+function hexToRgb(hex: string): [number, number, number] {
+	hex = hex.replace(/^#/, "");
+
+	if (hex.length === 3) {
+		hex = hex
+			.split("")
+			.map(c => c + c)
+			.join("");
+	}
+
+	if (hex.length !== 6) {
+		throw new Error("Invalid hex color");
+	}
+
+	const num = parseInt(hex, 16);
+
+	return [
+		(num >> 16) & 0xff,
+		(num >> 8) & 0xff,
+		num & 0xff,
+	];
+}
+
 export class ContainerEditor {
 	public cursor = -1;
-	public component: ContainerBuilder;
-
-	public constructor(public name: string, component?: ContainerBuilder) {
-		this.component = component || k.container({
-			color: "Yellow",
-			components: ["Insira seu texto aqui."]
-		})
-	}
+	public constructor(public component: ContainerBuilder) { }
 
 	public select(index: number) {
 		if (index >= 0 && index < this.component.components.length)
@@ -30,6 +46,17 @@ export class ContainerEditor {
 	}
 
 	public selected<T extends ContainerComponentBuilder>() { return this.component.components[this.cursor] as T; }
+
+	public setColor(color: string) {
+		try {
+		  this.component.setAccentColor(hexToRgb(color));
+		  console.log("trocou");
+		} catch (error) { console.error(error) }
+	}
+
+	public setSpoiler() {
+		this.component.setSpoiler(true);
+	}
 
 	public addText(content: string) {
 		this.insert(k.text(content));

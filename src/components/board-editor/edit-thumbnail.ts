@@ -9,13 +9,13 @@ export default createComponent({
 	name: "bd_edit_thumbnail",
 	authorOnly: true,
 	async execute(interaction: ButtonInteraction<CacheType>, args: string[]) {
-		const editor = bot.editors.get(interaction.user.id);
-		if (!editor) {
+		const board = bot.editors.get(interaction.user.id);
+		if (!board) {
 			await interaction.reply({ content: "Esse editor de board foi fechado.", flags: ["Ephemeral"] });
 			return;
 		}
 
-		const component = editor.selected<TextDisplayBuilder | SectionBuilder>();
+		const component = board.editor.selected<TextDisplayBuilder | SectionBuilder>();
 
 		const modal = k.modal({
 			cid: `bd_edit_thumbnail_modal`,
@@ -41,8 +41,8 @@ export default createComponent({
 
 			const url = response.fields.getTextInputValue("url");
 			if (component.data.type === ComponentType.TextDisplay) {
-				editor.delete();
-				editor.addSection(component.data.content!, k.thumbnail({
+				board.editor.delete();
+				board.editor.addSection(component.data.content!, k.thumbnail({
 					url
 				}));
 			} else if (component.data.type === ComponentType.Section) {
@@ -53,11 +53,11 @@ export default createComponent({
 
 			const view = new BoardEditorView({
 				user: interaction.user,
-				editor
+				editor: board
 			});
 
 			await interaction.message.edit(view.render());
 			await response.reply({ content: "Você editou a thumbnail com sucesso.", flags: ["Ephemeral"] });
-		} catch(error) { console.error(error) }
+		} catch (error) { console.error(error) }
 	}
 });

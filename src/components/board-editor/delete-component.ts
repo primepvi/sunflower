@@ -8,17 +8,17 @@ export default createComponent({
 	name: "bd_delete_component",
 	authorOnly: true,
 	async execute(interaction: ButtonInteraction<CacheType>, args: string[]) {
-		const editor = bot.editors.get(interaction.user.id);
-		if (!editor) {
+		const board = bot.editors.get(interaction.user.id);
+		if (!board) {
 			await interaction.reply({ content: "Esse editor de board foi fechado.", flags: ["Ephemeral"] });
 			return;
 		}
 
-		editor.delete();
+		board.editor.delete();
 
 		const view = new BoardEditorView({
 			user: interaction.user,
-			editor,
+			editor: board,
 		})
 
 		await view.update(interaction);

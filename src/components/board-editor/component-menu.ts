@@ -8,18 +8,18 @@ export default createComponent({
 	name: "bd_component_menu",
 	authorOnly: true,
 	async execute(interaction: StringSelectMenuInteraction<CacheType>, args: string[]) {
-	  const editor = bot.editors.get(interaction.user.id);
-	  if (!editor) {
+	  const board = bot.editors.get(interaction.user.id);
+	  if (!board) {
 	    await interaction.reply({ content: "Esse editor de board foi fechado.", flags: ["Ephemeral"]});
 	    return;
 	  }
 
 	  const [componentIndex, componentType] = interaction.values[0]!.split("/");
-	  editor.select(parseInt(componentIndex!))
+	  board.editor.select(parseInt(componentIndex!))
 
 	  const view = new BoardEditorView({
 	    user: interaction.user,
-	    editor
+	    editor: board
 	  });
 
 	  await view.update(interaction);

@@ -58,5 +58,95 @@
     "animated": false,
     "id": "1513322170196168754",
     "link": "https://cdn.discordapp.com/emojis/1513322170196168754.png"
+  },
+  "icon_container": {
+    "animated": false,
+    "id": "1513588100801232957",
+    "link": "https://cdn.discordapp.com/emojis/1513588100801232957.png"
+  },
+  "icon_color": {
+    "animated": false,
+    "id": "1513588383488802846",
+    "link": "https://cdn.discordapp.com/emojis/1513588383488802846.png"
+  },
+  "icon_color_blue": {
+    "animated": false,
+    "id": "1513603257631510650",
+    "link": "https://cdn.discordapp.com/emojis/1513603257631510650.png"
+  },
+  "icon_color_grey": {
+    "animated": false,
+    "id": "1513603259166883920",
+    "link": "https://cdn.discordapp.com/emojis/1513603259166883920.png"
+  },
+  "icon_color_green": {
+    "animated": false,
+    "id": "1513603260643147897",
+    "link": "https://cdn.discordapp.com/emojis/1513603260643147897.png"
+  },
+  "icon_color_red": {
+    "animated": false,
+    "id": "1513603262639509604",
+    "link": "https://cdn.discordapp.com/emojis/1513603262639509604.png"
+  },
+  "icon_color_yellow": {
+    "animated": false,
+    "id": "1513603264262836234",
+    "link": "https://cdn.discordapp.com/emojis/1513603264262836234.png"
+  },
+  "icon_color_purple": {
+    "animated": false,
+    "id": "1513603266150273095",
+    "link": "https://cdn.discordapp.com/emojis/1513603266150273095.png"
+  },
+  "icon_color_pink": {
+    "animated": false,
+    "id": "1513603267727331488",
+    "link": "https://cdn.discordapp.com/emojis/1513603267727331488.png"
+  },
+  "icon_color_orange": {
+    "animated": false,
+    "id": "1513603269572956261",
+    "link": "https://cdn.discordapp.com/emojis/1513603269572956261.png"
+  },
+  "icon_color_aqua": {
+    "animated": false,
+    "id": "1513603271875494049",
+    "link": "https://cdn.discordapp.com/emojis/1513603271875494049.png"
+  },
+  "icon_color_white": {
+    "animated": false,
+    "id": "1513603274224439306",
+    "link": "https://cdn.discordapp.com/emojis/1513603274224439306.png"
+  },
+  "icon_color_black": {
+    "animated": false,
+    "id": "1513603275809882172",
+    "link": "https://cdn.discordapp.com/emojis/1513603275809882172.png"
+  },
+  "icon_color_emerald": {
+    "animated": false,
+    "id": "1513603277550256189",
+    "link": "https://cdn.discordapp.com/emojis/1513603277550256189.png"
+  },
+  "icon_color_amber": {
+    "animated": false,
+    "id": "1513603280033415258",
+    "link": "https://cdn.discordapp.com/emojis/1513603280033415258.png"
+  },
+  "icon_color_indigo": {
+    "animated": false,
+    "id": "1513603281941823729",
+    "link": "https://cdn.discordapp.com/emojis/1513603281941823729.png"
+  },
+  "icon_color_cyan": {
+    "animated": false,
+    "id": "1513603283397116054",
+    "link": "https://cdn.discordapp.com/emojis/1513603283397116054.png"
+  },
+  "icon_color_rose": {
+    "animated": false,
+    "id": "1513603285297139934",
+    "link": "https://cdn.discordapp.com/emojis/1513603285297139934.png"
   }
 }

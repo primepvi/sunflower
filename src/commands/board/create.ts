@@ -4,6 +4,7 @@ import { opts } from "../../utils/command-opts.js";
 import { ContainerEditor } from "../../structs/container-editor.js";
 import { BoardEditorView } from "../../views/board/editor.view.js";
 import { bot } from "../../bot.js";
+import { BoardEditor } from "../../structs/board-editor.js";
 
 export default createSubcommand({
 	name: "create",
@@ -12,14 +13,14 @@ export default createSubcommand({
 		opts.string({ name: "name", description: "Insira aqui o nome do board.", required: true })
 	],
 	async execute(interaction: ChatInputCommandInteraction) {
-	        const boardName = interaction.options.getString("name", true);
+		const boardName = interaction.options.getString("name", true);
 
-		const editor = new ContainerEditor(boardName);
-		bot.editors.set(interaction.user.id, editor);
+		const board = new BoardEditor(boardName);
+		bot.editors.set(interaction.user.id, board);
 
 		const view = new BoardEditorView({
 			user: interaction.user,
-			editor
+			editor: board
 		});
 
 		await view.open(interaction);

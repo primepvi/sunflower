@@ -6,17 +6,26 @@ import { BoardEditorView } from "../../views/board/editor.view.js";
 export default createComponent({
 	type: ComponentType.Button,
 	authorOnly: true,
-	name: "bd_home",
+	name: "bd_page",
 	async execute(interaction: ButtonInteraction<CacheType>, args: string[]) {
-		const editor = bot.editors.get(interaction.user.id);
-		if (!editor) {
+		const board = bot.editors.get(interaction.user.id);
+		if (!board) {
 			await interaction.reply({ content: "Esse editor de board foi fechado.", flags: ["Ephemeral"] });
 			return;
 		}
 
-		editor.deselect();
+
+		const [_userId, page, ..._rest] = args;
+		switch (page) {
+			case "home": {
+				board.editor.deselect();
+				break;
+			}
+		}
+
+
 		const view = new BoardEditorView({
-			editor,
+			editor: board,
 			user: interaction.user
 		});
 

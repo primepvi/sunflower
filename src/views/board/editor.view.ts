@@ -1,19 +1,26 @@
-import { ComponentType, TextDisplayBuilder, type BaseMessageOptions, type User } from "discord.js";
+import { ComponentType, type BaseMessageOptions, type User } from "discord.js";
 import { View } from "../../structs/view.js";
-import type { ContainerEditor } from "../../structs/container-editor.js";
 import { k, type StringSelectMenuOptionData } from "kompozr";
 import { e } from "../../utils/emojis.js";
+import type { BoardEditor } from "../../structs/board-editor.js";
 
 export type BoardEditorViewPageType = "home" | "edit-text-display" | "edit-separator" | "edit-section";
 
 export interface BoardEditorViewState {
 	user: User;
-	editor: ContainerEditor;
+	editor: BoardEditor;
 }
 
 export class BoardEditorView extends View<BoardEditorViewState> {
 	public render(state?: BoardEditorViewState): BaseMessageOptions {
-		switch (this.ensureCurrentPage()) {
+		const page = this.ensureCurrentPage()
+		const board = this.state.editor;
+		board.containers.forEach((c, i) => {
+			if (page == "home") return c.setSpoiler(false);
+			if (i !== board.cursor) return c.setSpoiler(true);
+		});
+
+		switch (page) {
 			case "home": return this.renderHomePage();
 			case "edit-section":
 			case "edit-text-display": return this.renderTextDisplayEditPage();
@@ -22,19 +29,76 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 	}
 
 	private ensureCurrentPage(): BoardEditorViewPageType {
-		const component = this.state.editor
+		const board = this.state.editor;
+		if (board.editor.cursor == -1) return "home";
+
+		const component = board.editor
 			.selected();
 
 		switch (component?.data?.type) {
 			case ComponentType.TextDisplay: return "edit-text-display";
 			case ComponentType.Separator: return "edit-separator";
 			case ComponentType.Section: return "edit-section";
-			default: return "home";
+			default: return "home"
 		}
 	}
 
 	private renderHomePage(): BaseMessageOptions {
-		const container = this.state.editor.component;
+		const board = this.state.editor;
+		const addContainerBtn = k.button.secondary({
+			cid: `bd_add_component/${this.state.user.id}/container`,
+			label: "Adicionar Container",
+			emoji: e.icon_container
+		});
+
+		const finalizeBtn = k.button.success({
+			cid: `bd_finalize/${this.state.user.id}`,
+			label: "Finalizar",
+		});
+
+		const containerMenuOptions = board.containers.map((c, i) => {
+			return {
+				value: `${i}/container`,
+				label: `${i} | Container`,
+				emoji: e.icon_container,
+				default: board.cursor == i,
+				description: `Clique aqui para editar este container.`
+			} satisfies StringSelectMenuOptionData;
+		});
+
+		const containerMenu = k.select.string({
+			cid: `bd_container_menu/${this.state.user.id}`,
+			min: 1,
+			max: 1,
+			options: containerMenuOptions,
+			placeholder: "Clique aqui para selecionar um container."
+		})
+
+		const deleteBtn = k.button.secondary({
+			cid: `bd_delete_container/${this.state.user.id}`,
+			label: "Deletar Container",
+			disabled: board.containers.length <= 1,
+			emoji: e.icon_trash.toString()
+		});
+
+		const moveUpBtn = k.button.secondary({
+			cid: `bd_move_container/${this.state.user.id}/up`,
+			disabled: board.cursor <= 0,
+			emoji: e.icon_up.toString()
+		});
+
+		const moveDownBtn = k.button.secondary({
+			cid: `bd_move_container/${this.state.user.id}/down`,
+			disabled: board.cursor >= board.containers.length - 1,
+			emoji: e.icon_down.toString()
+		});
+
+		const cloneBtn = k.button.secondary({
+			cid: `bd_clone_container/${this.state.user.id}`,
+			label: "Clonar Container",
+			emoji: e.icon_clone
+		});
+
 		const addTextBtn = k.button.secondary({
 			cid: `bd_add_component/${this.state.user.id}/text`,
 			label: "Adicionar Texto",
@@ -47,16 +111,21 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 			emoji: e.icon_separator
 		});
 
-		const finalizeBtn = k.button.success({
-			cid: `bd_finalize/${this.state.user.id}`,
-			label: "Finalizar",
+		const editContainerColorBtn = k.button.secondary({
+			cid: `bd_container_color/${this.state.user.id}`,
+			label: "Alterar Cor",
+			emoji: e.icon_color
 		});
 
-	  return { components: [container, this.prepareComponentMenu(), k.row(addTextBtn, addSeparatorBtn, finalizeBtn)] };
+		const containerActions = k.row(moveUpBtn, moveDownBtn, deleteBtn, cloneBtn, editContainerColorBtn);
+		const containerActions2 = k.row(addContainerBtn, addTextBtn, addSeparatorBtn, finalizeBtn)
+
+		return { components: [...board.containers, containerMenu, this.prepareComponentMenu(), containerActions, containerActions2], };
 	}
 
 	private renderTextDisplayEditPage(): BaseMessageOptions {
-		const container = this.state.editor.component;
+		const board = this.state.editor;
+
 		const editContentBtn = k.button.secondary({
 			cid: `bd_edit_content/${this.state.user.id}`,
 			label: "Editar Conteúdo",
@@ -69,11 +138,12 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 			emoji: e.icon_image
 		});
 
-		return { components: [container, this.prepareComponentMenu(), k.row(editContentBtn, editThumbnailBtn), this.prepareComponentActions()] };
+		return { components: [...board.containers, this.prepareComponentMenu(), k.row(editContentBtn, editThumbnailBtn), this.prepareComponentActions()] };
 	}
 
 	private renderSeparatorEditPage(): BaseMessageOptions {
-		const container = this.state.editor.component;
+		const board = this.state.editor;
+
 		const toggleVisibilityBtn = k.button.secondary({
 			cid: `bd_edit_separator/${this.state.user.id}/visibility`,
 			label: "Mudar Visibilidade",
@@ -86,26 +156,29 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 			emoji: e.icon_spacing
 		});
 
-		return { components: [container, this.prepareComponentMenu(), k.row(toggleVisibilityBtn, toggleSpacingBtn), this.prepareComponentActions()] };
+		return { components: [...board.containers, this.prepareComponentMenu(), k.row(toggleVisibilityBtn, toggleSpacingBtn), this.prepareComponentActions()] };
 	}
 
 	private prepareComponentActions() {
+		const board = this.state.editor;
+		const container = board.selected();
+
 		const deleteBtn = k.button.secondary({
 			cid: `bd_delete_component/${this.state.user.id}`,
 			label: "Deletar",
-			disabled: this.state.editor.component.components.length <= 1,
+			disabled: container.components.length <= 1,
 			emoji: e.icon_trash.toString()
 		});
 
 		const moveUpBtn = k.button.secondary({
 			cid: `bd_move_component/${this.state.user.id}/up`,
-			disabled: this.state.editor.cursor <= 0,
+			disabled: board.editor.cursor <= 0,
 			emoji: e.icon_up.toString()
 		});
 
 		const moveDownBtn = k.button.secondary({
 			cid: `bd_move_component/${this.state.user.id}/down`,
-			disabled: this.state.editor.cursor >= this.state.editor.component.components.length - 1,
+			disabled: board.editor.cursor >= container.components.length - 1,
 			emoji: e.icon_down.toString()
 		});
 
@@ -115,34 +188,39 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 			emoji: e.icon_clone
 		});
 
-		const homeBtn = k.button.secondary({
-			cid: `bd_home/${this.state.user.id}`,
-			label: "Menu",
-			emoji: e.icon_home
+		const editContainerBtn = k.button.secondary({
+			cid: `bd_page/${this.state.user.id}/home`,
+			label: "Editar Container",
+			emoji: e.icon_container
 		});
 
-		return k.row(moveUpBtn, moveDownBtn, deleteBtn, cloneBtn, homeBtn);
+		return k.row(moveUpBtn, moveDownBtn, deleteBtn, cloneBtn, editContainerBtn);
 	}
 
 	private prepareComponentMenu() {
 		const componentMenu = k.select.string({
 			cid: `bd_component_menu/${this.state.user.id}`,
-			options: this.prepareComponentMenuOptions()
+			options: this.prepareComponentMenuOptions(),
+			min: 1,
+			max: 1,
+			placeholder: "Clique aqui para selecionar um componente."
 		});
 
 		return componentMenu;
 	}
 
 	private prepareComponentMenuOptions(): StringSelectMenuOptionData[] {
-		const container = this.state.editor.component;
+		const board = this.state.editor;
+		const container = board.selected();
+
 		return container.components.map((c, i) => {
 			switch (c.data.type) {
 				case ComponentType.TextDisplay:
-					return { label: `${i} | Texto`, value: `${i}/text`, description: "Clique aqui para editar este texto.", default: this.state.editor.cursor == i, emoji: e.icon_text_display } satisfies StringSelectMenuOptionData;
+					return { label: `${i} | Texto`, value: `${i}/text`, description: "Clique aqui para editar este texto.", default: board.editor.cursor == i, emoji: e.icon_text_display } satisfies StringSelectMenuOptionData;
 				case ComponentType.Separator:
-					return { label: `${i} | Separador`, value: `${i}/separator`, description: "Clique aqui para editar este separador.", default: this.state.editor.cursor == i, emoji: e.icon_separator } satisfies StringSelectMenuOptionData;
+					return { label: `${i} | Separador`, value: `${i}/separator`, description: "Clique aqui para editar este separador.", default: board.editor.cursor == i, emoji: e.icon_separator } satisfies StringSelectMenuOptionData;
 				case ComponentType.Section:
-					return { label: `${i} | Seção`, value: `${i}/section`, description: "Clique aqui para editar esta seção.", default: this.state.editor.cursor == i, emoji: e.icon_section } satisfies StringSelectMenuOptionData;
+					return { label: `${i} | Seção`, value: `${i}/section`, description: "Clique aqui para editar esta seção.", default: board.editor.cursor == i, emoji: e.icon_section } satisfies StringSelectMenuOptionData;
 				default:
 					return null;
 			}

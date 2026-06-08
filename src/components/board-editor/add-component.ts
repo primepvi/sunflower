@@ -8,32 +8,36 @@ export default createComponent({
 	name: "bd_add_component",
 	authorOnly: true,
 	async execute(interaction: ButtonInteraction<CacheType>, args: string[]) {
-		const editor = bot.editors.get(interaction.user.id);
-		if (!editor) {
+		const board = bot.editors.get(interaction.user.id);
+		if (!board) {
 			await interaction.reply({ content: "Esse editor de board foi fechado.", flags: ["Ephemeral"] });
 			return;
 		}
 
-	  const componentType = args[1]!;
-	  
-	  switch (componentType) {
-	    case "text": {
-	      editor.addText("Insira seu texto aqui");
-	      break;
-	    }
-	    case "separator": {
-	      editor.addSeparator();
-	      break;
-	    }
-	  }
+		const componentType = args[1]!;
 
-	  const view = new BoardEditorView({
-	    user: interaction.user,
-	    editor
-	  })
+		switch (componentType) {
+			case "text": {
+				board.editor.addText("Insira seu texto aqui");
+				break;
+			}
+			case "separator": {
+				board.editor.addSeparator();
+				break;
+			}
+			case "container": {
+				board.addContainer();
+				board.editor.deselect();
+			}
+		}
 
-	  bot.editors.set(interaction.user.id, editor);
+		const view = new BoardEditorView({
+			user: interaction.user,
+			editor: board
+		})
 
-	  await view.update(interaction);
+		bot.editors.set(interaction.user.id, board);
+
+		await view.update(interaction);
 	}
 });

@@ -10,19 +10,21 @@ export default createComponent({
 	authorOnly: true,
 	name: "bd_finalize",
 	async execute(interaction: ButtonInteraction<CacheType>, args: string[]) {
-		const editor = bot.editors.get(interaction.user.id);
-		if (!editor) {
+		const board = bot.editors.get(interaction.user.id);
+		if (!board) {
 			await interaction.reply({ content: "Esse editor de board foi fechado.", flags: ["Ephemeral"] });
 			return;
 		}
 
-		const board = await managers.board.create({
+		const boardData = await managers.board.create({
 			guildId: interaction.guild!.id,
-			name: editor.name
+			name: board.name
 		});
-		board.containers.push(editor.component.toJSON());
-		await board.save();
+		boardData.containers = board.containers.map(c =>
+			c.setSpoiler(false).toJSON()
+		);
+		await boardData.save();
 
-		await interaction.update({ components: [k.text(`O board "${editor.name}" foi criado com sucesso.`)] });
+		await interaction.update({ components: [k.text(`O board "${board.name}" foi criado com sucesso.`)] });
 	}
 });

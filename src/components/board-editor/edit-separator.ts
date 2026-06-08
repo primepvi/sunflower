@@ -8,13 +8,13 @@ export default createComponent({
 	name: "bd_edit_separator",
 	authorOnly: true,
 	async execute(interaction: ButtonInteraction<CacheType>, args: string[]) {
-		const editor = bot.editors.get(interaction.user.id);
-		if (!editor) {
+		const board = bot.editors.get(interaction.user.id);
+		if (!board) {
 			await interaction.reply({ content: "Esse editor de board foi fechado.", flags: ["Ephemeral"] });
 			return;
 		}
 
-		const component = editor.selected<SeparatorBuilder>();
+		const component = board.editor.selected<SeparatorBuilder>();
 		const property = args[1]!;
 		if (property == "visibility")
 			component.setDivider(!component.data.divider);
@@ -22,7 +22,7 @@ export default createComponent({
 
 		const view = new BoardEditorView({
 			user: interaction.user,
-			editor,
+			editor: board,
 		})
 
 		await view.update(interaction);

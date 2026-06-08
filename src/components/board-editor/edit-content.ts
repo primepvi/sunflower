@@ -9,13 +9,13 @@ export default createComponent({
 	name: "bd_edit_content",
 	authorOnly: true,
 	async execute(interaction: ButtonInteraction<CacheType>, args: string[]) {
-		const editor = bot.editors.get(interaction.user.id);
-		if (!editor) {
+		const board = bot.editors.get(interaction.user.id);
+		if (!board) {
 			await interaction.reply({ content: "Esse editor de board foi fechado.", flags: ["Ephemeral"] });
 			return;
 		}
 
-		const component = editor.selected<TextDisplayBuilder | SectionBuilder>();
+		const component = board.editor.selected<TextDisplayBuilder | SectionBuilder>();
 		const text = component.data.type === ComponentType.TextDisplay ?
 			component as TextDisplayBuilder :
 			(component as SectionBuilder).components[0]! as TextDisplayBuilder;
@@ -50,12 +50,12 @@ export default createComponent({
 
 			const view = new BoardEditorView({
 				user: interaction.user,
-				editor
+				editor: board
 			});
 
 			await interaction.message.edit(view.render());
 			await response.reply({ content: "Você editou o conteudo com sucesso.", flags: ["Ephemeral"] });
-		} catch(error) { console.error(error) }
+		} catch (error) { console.error(error) }
 	}
 });
 

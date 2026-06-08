@@ -8,19 +8,19 @@ export default createComponent({
 	name: "bd_move_component",
 	authorOnly: true,
 	async execute(interaction: ButtonInteraction<CacheType>, args: string[]) {
-		const editor = bot.editors.get(interaction.user.id);
-		if (!editor) {
+		const board = bot.editors.get(interaction.user.id);
+		if (!board) {
 			await interaction.reply({ content: "Esse editor de board foi fechado.", flags: ["Ephemeral"] });
 			return;
 		}
 
 		const direction = args[1]!;
-		if (direction == "up") editor.moveUp();
-		else if (direction == "down") editor.moveDown();
+		if (direction == "up") board.editor.moveUp();
+		else if (direction == "down") board.editor.moveDown();
 
 		const view = new BoardEditorView({
 			user: interaction.user,
-			editor,
+			editor: board,
 		})
 
 		await view.update(interaction);
