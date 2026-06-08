@@ -6,7 +6,7 @@ import { BoardEditorView } from "../../views/board/editor.view.js";
 
 export default createComponent({
 	type: ComponentType.Button,
-	name: "bd_edit_content",
+	name: "bd_edit_thumbnail",
 	authorOnly: true,
 	async execute(interaction: ButtonInteraction<CacheType>, args: string[]) {
 		const editor = bot.editors.get(interaction.user.id);
@@ -16,25 +16,22 @@ export default createComponent({
 		}
 
 		const component = editor.selected<TextDisplayBuilder | SectionBuilder>();
-		const text = component.data.type === ComponentType.TextDisplay ?
-			component as TextDisplayBuilder :
-			(component as SectionBuilder).components[0]! as TextDisplayBuilder;
 
 		const modal = k.modal({
-			cid: `bd_edit_content_modal`,
+			cid: `bd_edit_thumbnail_modal`,
 			title: "Editar Thumbnail",
-			inputs: [k.input.paragraph({
-				cid: "content",
-				label: "Texto",
-				description: "Insira abaixo a novo conteúdo:",
+			inputs: [k.input.short({
+				cid: "url",
+				label: "URL",
+				description: "Insira abaixo a url da imagem:",
 				required: true,
-				value: text.data.content!,
 				min: 1,
 			})]
 		});
+
 		await interaction.showModal(modal);
 
-		const filter = (i: ModalSubmitInteraction) => i.customId === `bd_edit_content_modal` && i.user.id === interaction.user.id;
+		const filter = (i: ModalSubmitInteraction) => i.customId === `bd_edit_thumbnail_modal` && i.user.id === interaction.user.id;
 
 		try {
 			const response = await interaction.awaitModalSubmit({
@@ -42,11 +39,17 @@ export default createComponent({
 				filter
 			});
 
-			const content = response.fields.getTextInputValue("content");
-			if (component.data.type === ComponentType.TextDisplay)
-				(component as TextDisplayBuilder).setContent(content);
-			else if (component.data.type === ComponentType.Section)
-				(component as SectionBuilder).spliceTextDisplayComponents(0, 1, k.text(content));
+			const url = response.fields.getTextInputValue("url");
+			if (component.data.type === ComponentType.TextDisplay) {
+				editor.delete();
+				editor.addSection(component.data.content!, k.thumbnail({
+					url
+				}));
+			} else if (component.data.type === ComponentType.Section) {
+				(component as SectionBuilder).setThumbnailAccessory(k.thumbnail({
+					url
+				}));
+			}
 
 			const view = new BoardEditorView({
 				user: interaction.user,
@@ -54,8 +57,7 @@ export default createComponent({
 			});
 
 			await interaction.message.edit(view.render());
-			await response.reply({ content: "Você editou o conteudo com sucesso.", flags: ["Ephemeral"] });
+			await response.reply({ content: "Você editou a thumbnail com sucesso.", flags: ["Ephemeral"] });
 		} catch(error) { console.error(error) }
 	}
 });
-

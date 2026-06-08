@@ -10,7 +10,7 @@ export default createComponent({
 	async execute(interaction: StringSelectMenuInteraction<CacheType>, args: string[]) {
 	  const editor = bot.editors.get(interaction.user.id);
 	  if (!editor) {
-	    interaction.reply({ content: "Esse editor de board foi fechado.", flags: ["Ephemeral"]});
+	    await interaction.reply({ content: "Esse editor de board foi fechado.", flags: ["Ephemeral"]});
 	    return;
 	  }
 
@@ -19,8 +19,7 @@ export default createComponent({
 
 	  const view = new BoardEditorView({
 	    user: interaction.user,
-	    editor,
-	    page: "edit-text-display"
+	    editor
 	  });
 
 	  await view.update(interaction);

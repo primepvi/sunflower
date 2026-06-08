@@ -1,0 +1,62 @@
+{
+  "icon_up": {
+    "animated": false,
+    "id": "1513302956491935754",
+    "link": "https://cdn.discordapp.com/emojis/1513302956491935754.png"
+  },
+  "icon_down": {
+    "animated": false,
+    "id": "1513302957653885018",
+    "link": "https://cdn.discordapp.com/emojis/1513302957653885018.png"
+  },
+  "icon_home": {
+    "animated": false,
+    "id": "1513302959285469266",
+    "link": "https://cdn.discordapp.com/emojis/1513302959285469266.png"
+  },
+  "icon_separator": {
+    "animated": false,
+    "id": "1513302960917057639",
+    "link": "https://cdn.discordapp.com/emojis/1513302960917057639.png"
+  },
+  "icon_text_display": {
+    "animated": false,
+    "id": "1513302962955485314",
+    "link": "https://cdn.discordapp.com/emojis/1513302962955485314.png"
+  },
+  "icon_trash": {
+    "animated": false,
+    "id": "1513303738775900280",
+    "link": "https://cdn.discordapp.com/emojis/1513303738775900280.png"
+  },
+  "icon_opacity": {
+    "animated": false,
+    "id": "1513303740587708666",
+    "link": "https://cdn.discordapp.com/emojis/1513303740587708666.png"
+  },
+  "icon_spacing": {
+    "animated": false,
+    "id": "1513303742072492214",
+    "link": "https://cdn.discordapp.com/emojis/1513303742072492214.png"
+  },
+  "icon_edit_text": {
+    "animated": false,
+    "id": "1513303743356207204",
+    "link": "https://cdn.discordapp.com/emojis/1513303743356207204.png"
+  },
+  "icon_clone": {
+    "animated": false,
+    "id": "1513305847340728483",
+    "link": "https://cdn.discordapp.com/emojis/1513305847340728483.png"
+  },
+  "icon_section": {
+    "animated": false,
+    "id": "1513321545064513568",
+    "link": "https://cdn.discordapp.com/emojis/1513321545064513568.png"
+  },
+  "icon_image": {
+    "animated": false,
+    "id": "1513322170196168754",
+    "link": "https://cdn.discordapp.com/emojis/1513322170196168754.png"
+  }
+}

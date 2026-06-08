@@ -19,8 +19,7 @@ export default createSubcommand({
 
 		const view = new BoardEditorView({
 			user: interaction.user,
-			editor,
-			page: "home"
+			editor
 		});
 
 		await view.open(interaction);
