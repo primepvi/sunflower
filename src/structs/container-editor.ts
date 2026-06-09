@@ -1,4 +1,4 @@
-import { ButtonBuilder, ComponentType, ContainerBuilder, SectionBuilder, SeparatorBuilder, ThumbnailBuilder, type ContainerComponentBuilder } from "discord.js";
+import { ButtonBuilder, ComponentType, ContainerBuilder, MediaGalleryBuilder, SectionBuilder, SeparatorBuilder, ThumbnailBuilder, type ContainerComponentBuilder } from "discord.js";
 import { k } from "kompozr";
 
 function hexToRgb(hex: string): [number, number, number] {
@@ -41,7 +41,7 @@ export class ContainerEditor {
 
 	public delete() {
 		this.component.components.splice(this.cursor, 1);
-		this.cursor -= 1;
+		this.cursor = Math.max(0, this.cursor - 1);
 		return this;
 	}
 
@@ -49,8 +49,8 @@ export class ContainerEditor {
 
 	public setColor(color: string) {
 		try {
-		  this.component.setAccentColor(hexToRgb(color));
-		  console.log("trocou");
+			this.component.setAccentColor(hexToRgb(color));
+			console.log("trocou");
 		} catch (error) { console.error(error) }
 	}
 
@@ -65,6 +65,11 @@ export class ContainerEditor {
 
 	public addSeparator() {
 		this.insert(k.separator.small);
+		return this;
+	}
+
+	public addGallery(imageUrl: string) {
+		this.insert(k.gallery({ url: imageUrl }));
 		return this;
 	}
 
@@ -89,6 +94,10 @@ export class ContainerEditor {
 			}
 			case ComponentType.Section: {
 				this.insert(new SectionBuilder((component as SectionBuilder).toJSON()));
+				break;
+			}
+			case ComponentType.MediaGallery: {
+				this.insert(new MediaGalleryBuilder((component as MediaGalleryBuilder).toJSON()));
 				break;
 			}
 		}

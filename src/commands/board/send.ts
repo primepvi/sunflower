@@ -17,9 +17,8 @@ export default createSubcommand({
 			return;
 		}
 
-		const containerData = board.containers[0];
-		const container = new ContainerBuilder(containerData);
+		const containers = board.containers.map(c => new ContainerBuilder(c));
 
-		await interaction.reply({ components: [container], flags: ["IsComponentsV2"] });
+		await interaction.reply({ components: [...containers], flags: ["IsComponentsV2"] });
 	}
 });

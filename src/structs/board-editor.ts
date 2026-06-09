@@ -36,7 +36,7 @@ export class BoardEditor {
 
 	public delete() {
 		this.containers.splice(this.cursor, 1);
-		this.cursor -= 1;
+		this.cursor = Math.max(0, this.cursor - 1);
 		return this;
 	}
 

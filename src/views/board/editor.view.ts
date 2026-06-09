@@ -1,10 +1,10 @@
-import { ComponentType, type BaseMessageOptions, type User } from "discord.js";
+import { ComponentType, MediaGalleryBuilder, type BaseMessageOptions, type User } from "discord.js";
 import { View } from "../../structs/view.js";
 import { k, type StringSelectMenuOptionData } from "kompozr";
 import { e } from "../../utils/emojis.js";
 import type { BoardEditor } from "../../structs/board-editor.js";
 
-export type BoardEditorViewPageType = "home" | "edit-text-display" | "edit-separator" | "edit-section";
+export type BoardEditorViewPageType = "home" | "edit-text-display" | "edit-separator" | "edit-section" | "edit-gallery";
 
 export interface BoardEditorViewState {
 	user: User;
@@ -25,6 +25,7 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 			case "edit-section":
 			case "edit-text-display": return this.renderTextDisplayEditPage();
 			case "edit-separator": return this.renderSeparatorEditPage();
+			case "edit-gallery": return this.renderGalleryEditPage();
 		}
 	}
 
@@ -39,6 +40,7 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 			case ComponentType.TextDisplay: return "edit-text-display";
 			case ComponentType.Separator: return "edit-separator";
 			case ComponentType.Section: return "edit-section";
+			case ComponentType.MediaGallery: return "edit-gallery";
 			default: return "home"
 		}
 	}
@@ -111,6 +113,12 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 			emoji: e.icon_separator
 		});
 
+		const addGaleryBtn = k.button.secondary({
+			cid: `bd_add_component/${this.state.user.id}/gallery`,
+			label: "Adicionar Galeria",
+			emoji: e.icon_image
+		});
+
 		const editContainerColorBtn = k.button.secondary({
 			cid: `bd_container_color/${this.state.user.id}`,
 			label: "Alterar Cor",
@@ -118,7 +126,7 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 		});
 
 		const containerActions = k.row(moveUpBtn, moveDownBtn, deleteBtn, cloneBtn, editContainerColorBtn);
-		const containerActions2 = k.row(addContainerBtn, addTextBtn, addSeparatorBtn, finalizeBtn)
+		const containerActions2 = k.row(addContainerBtn, addTextBtn, addSeparatorBtn, addGaleryBtn, finalizeBtn)
 
 		return { components: [...board.containers, containerMenu, this.prepareComponentMenu(), containerActions, containerActions2], };
 	}
@@ -157,6 +165,31 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 		});
 
 		return { components: [...board.containers, this.prepareComponentMenu(), k.row(toggleVisibilityBtn, toggleSpacingBtn), this.prepareComponentActions()] };
+	}
+
+	private renderGalleryEditPage(): BaseMessageOptions {
+		const board = this.state.editor;
+
+		const addImageBtn = k.button.secondary({
+			cid: `bd_gallery_add_image/${this.state.user.id}`,
+			label: "Adicionar Imagem",
+			emoji: e.icon_image
+		});
+
+		const editImageBtn = k.button.secondary({
+			cid: `bd_gallery_edit_image/${this.state.user.id}`,
+			label: "Editar Imagem",
+			emoji: e.icon_edit_text
+		});
+
+		const deleteImageBtn = k.button.secondary({
+			cid: `bd_gallery_delete_image/${this.state.user.id}`,
+			label: "Remover Imagem",
+			emoji: e.icon_trash,
+			disabled: board.editor.selected<MediaGalleryBuilder>().items.length <= 1
+		});
+
+		return { components: [...board.containers, this.prepareComponentMenu(), k.row(addImageBtn, editImageBtn, deleteImageBtn), this.prepareComponentActions()] };
 	}
 
 	private prepareComponentActions() {
@@ -221,6 +254,8 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 					return { label: `${i} | Separador`, value: `${i}/separator`, description: "Clique aqui para editar este separador.", default: board.editor.cursor == i, emoji: e.icon_separator } satisfies StringSelectMenuOptionData;
 				case ComponentType.Section:
 					return { label: `${i} | Seção`, value: `${i}/section`, description: "Clique aqui para editar esta seção.", default: board.editor.cursor == i, emoji: e.icon_section } satisfies StringSelectMenuOptionData;
+				case ComponentType.MediaGallery:
+					return { label: `${i} | Galeria`, value: `${i}/gallery`, description: "Clique aqui para editar esta galeria.", default: board.editor.cursor == i, emoji: e.icon_image } satisfies StringSelectMenuOptionData;
 				default:
 					return null;
 			}

@@ -1,7 +1,7 @@
 import { ButtonInteraction, ComponentType, type CacheType } from "discord.js";
 import { createComponent } from "../../utils/component.js";
 import { bot } from "../../bot.js";
-import { BoardEditorView, type BoardEditorViewPageType } from "../../views/board/editor.view.js";
+import { BoardEditorView } from "../../views/board/editor.view.js";
 
 export default createComponent({
 	type: ComponentType.Button,

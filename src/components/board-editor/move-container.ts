@@ -5,7 +5,7 @@ import { BoardEditorView } from "../../views/board/editor.view.js";
 
 export default createComponent({
 	type: ComponentType.Button,
-	name: "bd_add_component",
+	name: "bd_move_container",
 	authorOnly: true,
 	async execute(interaction: ButtonInteraction<CacheType>, args: string[]) {
 		const board = bot.editors.get(interaction.user.id);
@@ -14,34 +14,14 @@ export default createComponent({
 			return;
 		}
 
-		const componentType = args[1]!;
-
-		switch (componentType) {
-			case "text": {
-				board.editor.addText("Insira seu texto aqui");
-				break;
-			}
-			case "separator": {
-				board.editor.addSeparator();
-				break;
-			}
-			case "container": {
-				board.addContainer();
-				board.editor.deselect();
-				break;
-			}
-			case "gallery": {
-				board.editor.addGallery(bot.user?.displayAvatarURL({ size: 2048, extension: "png" })!)
-				break;
-			}
-		}
+		const direction = args[1]!;
+		if (direction == "up") board.moveUp();
+		else if (direction == "down") board.moveDown();
 
 		const view = new BoardEditorView({
 			user: interaction.user,
-			editor: board
+			editor: board,
 		})
-
-		bot.editors.set(interaction.user.id, board);
 
 		await view.update(interaction);
 	}
