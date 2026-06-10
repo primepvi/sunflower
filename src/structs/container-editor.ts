@@ -50,8 +50,7 @@ export class ContainerEditor {
 	public setColor(color: string) {
 		try {
 			this.component.setAccentColor(hexToRgb(color));
-			console.log("trocou");
-		} catch (error) { console.error(error) }
+		} catch {}
 	}
 
 	public setSpoiler() {

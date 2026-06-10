@@ -1,7 +1,8 @@
 import { ButtonInteraction, ComponentType, type CacheType } from "discord.js";
 import { createComponent } from "../../utils/component.js";
 import { bot } from "../../bot.js";
-import { BoardEditorView } from "../../views/board/editor.view.js";
+import { BoardEditorView, type BoardEditorViewPageType } from "../../views/board/editor.view.js";
+import type { BoardEditor } from "../../structs/board-editor.js";
 
 export default createComponent({
 	type: ComponentType.Button,
@@ -14,19 +15,11 @@ export default createComponent({
 			return;
 		}
 
-
 		const [_userId, page, ..._rest] = args;
-		switch (page) {
-			case "home": {
-				board.editor.deselect();
-				break;
-			}
-		}
-
-
 		const view = new BoardEditorView({
 			editor: board,
-			user: interaction.user
+			user: interaction.user,
+			page: page as BoardEditorViewPageType
 		});
 
 		await view.update(interaction);

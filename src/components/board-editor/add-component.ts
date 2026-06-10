@@ -26,6 +26,7 @@ export default createComponent({
 				break;
 			}
 			case "container": {
+				board.editor.deselect();
 				board.addContainer();
 				board.editor.deselect();
 				break;

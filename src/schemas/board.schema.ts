@@ -1,7 +1,17 @@
 import type { APIContainerComponent } from "discord.js";
 import { Schema, model } from "mongoose";
+import { e } from "../utils/emojis.js";
+import type { KompozrEmoji } from "kompozr";
 
-export type BoardFieldType = "user" | "channel" | "role" | "string" | "number";
+export type BoardFieldType = "user" | "channel" | "role" | "text" | "checkbox";
+export const boardFieldTypes = ["user", "channel", "role", "text", "checkbox"] as const satisfies readonly BoardFieldType[];
+export const boardFieldsEmojisRecord: Record<BoardFieldType, KompozrEmoji> = {
+	user: e.icon_user,
+	role: e.icon_mention,
+	channel: e.icon_hashtag,
+	text: e.icon_text_display,
+	checkbox: e.icon_ok
+};
 
 export interface BoardFieldData {
 	key: string;
@@ -19,7 +29,7 @@ export interface BoardData {
 const boardFieldSchema = new Schema<BoardFieldData>({
 	key: { type: String, required: true },
 	label: { type: String, required: true },
-	type: { type: String, enum: ["user", "channel", "role", "string", "number"], required: true },
+	type: { type: String, enum: boardFieldTypes, required: true },
 }, { _id: false })
 
 const boardSchema = new Schema<BoardData>({

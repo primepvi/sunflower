@@ -1,14 +1,16 @@
-import { ComponentType, MediaGalleryBuilder, type BaseMessageOptions, type User } from "discord.js";
+import { ComponentType, MediaGalleryBuilder, SeparatorBuilder, TextDisplayBuilder, type BaseMessageOptions, type User } from "discord.js";
 import { View } from "../../structs/view.js";
 import { k, type StringSelectMenuOptionData } from "kompozr";
 import { e } from "../../utils/emojis.js";
 import type { BoardEditor } from "../../structs/board-editor.js";
+import { boardFieldsEmojisRecord } from "../../schemas/board.schema.js";
 
-export type BoardEditorViewPageType = "home" | "edit-text-display" | "edit-separator" | "edit-section" | "edit-gallery";
+export type BoardEditorViewPageType = "home" | "edit-text-display" | "edit-separator" | "edit-section" | "edit-gallery" | "edit-fields";
 
 export interface BoardEditorViewState {
 	user: User;
 	editor: BoardEditor;
+	page?: BoardEditorViewPageType
 }
 
 export class BoardEditorView extends View<BoardEditorViewState> {
@@ -20,12 +22,13 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 			if (i !== board.cursor) return c.setSpoiler(true);
 		});
 
-		switch (page) {
+		switch (state?.page || page) {
 			case "home": return this.renderHomePage();
 			case "edit-section":
 			case "edit-text-display": return this.renderTextDisplayEditPage();
 			case "edit-separator": return this.renderSeparatorEditPage();
 			case "edit-gallery": return this.renderGalleryEditPage();
+			case "edit-fields": return this.renderFieldsEditPage();
 		}
 	}
 
@@ -47,15 +50,21 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 
 	private renderHomePage(): BaseMessageOptions {
 		const board = this.state.editor;
+
+		const canAddComponents = board.selected().components.length < 25;
+		const canAddContainer = board.containers.length < 25;
+
 		const addContainerBtn = k.button.secondary({
 			cid: `bd_add_component/${this.state.user.id}/container`,
 			label: "Adicionar Container",
-			emoji: e.icon_container
+			emoji: e.icon_container,
+			disabled: !canAddContainer || !board.canAddContainer()
 		});
 
-		const finalizeBtn = k.button.success({
+		const finalizeBtn = k.button.primary({
 			cid: `bd_finalize/${this.state.user.id}`,
 			label: "Finalizar",
+			emoji: e.icon_ok
 		});
 
 		const containerMenuOptions = board.containers.map((c, i) => {
@@ -98,25 +107,29 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 		const cloneBtn = k.button.secondary({
 			cid: `bd_clone_container/${this.state.user.id}`,
 			label: "Clonar Container",
-			emoji: e.icon_clone
+			emoji: e.icon_clone,
+			disabled: !canAddContainer || !board.canAddContainer(board.selected())
 		});
 
 		const addTextBtn = k.button.secondary({
 			cid: `bd_add_component/${this.state.user.id}/text`,
 			label: "Adicionar Texto",
-			emoji: e.icon_text_display
+			emoji: e.icon_text_display,
+			disabled: !canAddComponents || !board.canAddComponent(ComponentType.TextDisplay)
 		});
 
 		const addSeparatorBtn = k.button.secondary({
 			cid: `bd_add_component/${this.state.user.id}/separator`,
 			label: "Adicionar Separador",
-			emoji: e.icon_separator
+			emoji: e.icon_separator,
+			disabled: !canAddComponents || !board.canAddComponent(ComponentType.Separator)
 		});
 
 		const addGaleryBtn = k.button.secondary({
 			cid: `bd_add_component/${this.state.user.id}/gallery`,
 			label: "Adicionar Galeria",
-			emoji: e.icon_image
+			emoji: e.icon_image,
+			disabled: !canAddComponents || !board.canAddComponent(ComponentType.MediaGallery)
 		});
 
 		const editContainerColorBtn = k.button.secondary({
@@ -125,10 +138,16 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 			emoji: e.icon_color
 		});
 
-		const containerActions = k.row(moveUpBtn, moveDownBtn, deleteBtn, cloneBtn, editContainerColorBtn);
-		const containerActions2 = k.row(addContainerBtn, addTextBtn, addSeparatorBtn, addGaleryBtn, finalizeBtn)
+		const parametersBtn = k.button.secondary({
+			cid: `bd_page/${this.state.user.id}/edit-fields`,
+			label: "Editar Parâmetros",
+			emoji: e.icon_edit_text
+		});
 
-		return { components: [...board.containers, containerMenu, this.prepareComponentMenu(), containerActions, containerActions2], };
+		const containerActions = k.row(moveUpBtn, moveDownBtn, deleteBtn, cloneBtn, editContainerColorBtn);
+		const containerActions2 = k.row(addContainerBtn, addTextBtn, addSeparatorBtn, addGaleryBtn, parametersBtn)
+
+		return { components: [...board.containers, containerMenu, this.prepareComponentMenu(), containerActions, containerActions2, k.row(finalizeBtn)], };
 	}
 
 	private renderTextDisplayEditPage(): BaseMessageOptions {
@@ -143,7 +162,8 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 		const editThumbnailBtn = k.button.secondary({
 			cid: `bd_edit_thumbnail/${this.state.user.id}`,
 			label: "Editar Thumbnail",
-			emoji: e.icon_image
+			emoji: e.icon_image,
+			disabled: !board.canAddComponent(ComponentType.Section)
 		});
 
 		return { components: [...board.containers, this.prepareComponentMenu(), k.row(editContentBtn, editThumbnailBtn), this.prepareComponentActions()] };
@@ -169,11 +189,13 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 
 	private renderGalleryEditPage(): BaseMessageOptions {
 		const board = this.state.editor;
+		const gallery = board.editor.selected<MediaGalleryBuilder>();
 
 		const addImageBtn = k.button.secondary({
 			cid: `bd_gallery_add_image/${this.state.user.id}`,
 			label: "Adicionar Imagem",
-			emoji: e.icon_image
+			emoji: e.icon_image,
+			disabled: gallery.items.length >= 10
 		});
 
 		const editImageBtn = k.button.secondary({
@@ -186,10 +208,43 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 			cid: `bd_gallery_delete_image/${this.state.user.id}`,
 			label: "Remover Imagem",
 			emoji: e.icon_trash,
-			disabled: board.editor.selected<MediaGalleryBuilder>().items.length <= 1
+			disabled: gallery.items.length <= 1
 		});
 
 		return { components: [...board.containers, this.prepareComponentMenu(), k.row(addImageBtn, editImageBtn, deleteImageBtn), this.prepareComponentActions()] };
+	}
+
+	private renderFieldsEditPage(): BaseMessageOptions {
+		const board = this.state.editor;
+		const container = k.container({
+			color: "Yellow",
+			components: [k.text(
+				`## ${e.icon_edit_text} | Parâmetros do Board`,
+			  board.fields.map(f => `> ${boardFieldsEmojisRecord[f.type]} | ${f.label} (${f.type}): \`${f.key}\``).join("\n") || "```...nenhum parâmetro```"
+			)]
+		});
+
+		const addFieldBtn = k.button.secondary({
+			cid: `bd_field_add/${this.state.user.id}`,
+			label: "Adicionar Parâmetro",
+			emoji: e.icon_text_display,
+			disabled: board.fields.length >= 25
+		});
+
+		const removeFieldBtn = k.button.secondary({
+			cid: `bd_field_remove/${this.state.user.id}`,
+			label: "Remover Parâmetro",
+			emoji: e.icon_text_display,
+			disabled: board.fields.length <= 0
+		});
+
+		const homeBtn = k.button.secondary({
+			cid: `bd_page/${this.state.user.id}/home`,
+			label: "Menu",
+			emoji: e.icon_home,
+		});
+
+		return { components: [container, k.row(addFieldBtn, removeFieldBtn, homeBtn)] };
 	}
 
 	private prepareComponentActions() {
@@ -218,7 +273,8 @@ export class BoardEditorView extends View<BoardEditorViewState> {
 		const cloneBtn = k.button.secondary({
 			cid: `bd_clone_component/${this.state.user.id}`,
 			label: "Clonar",
-			emoji: e.icon_clone
+			emoji: e.icon_clone,
+			disabled: container.components.length >= 25 || !board.canAddComponent(board.editor.selected().data.type!)
 		});
 
 		const editContainerBtn = k.button.secondary({

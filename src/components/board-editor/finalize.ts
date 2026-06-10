@@ -23,6 +23,8 @@ export default createComponent({
 		boardData.containers = board.containers.map(c =>
 			c.setSpoiler(false).toJSON()
 		);
+
+		boardData.fields = board.fields;
 		await boardData.save();
 
 		await interaction.update({ components: [k.text(`O board "${board.name}" foi criado com sucesso.`)] });
