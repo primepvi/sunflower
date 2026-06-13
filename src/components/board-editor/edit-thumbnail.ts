@@ -33,31 +33,38 @@ export default createComponent({
 
 		const filter = (i: ModalSubmitInteraction) => i.customId === `bd_edit_thumbnail_modal` && i.user.id === interaction.user.id;
 
-		try {
-			const response = await interaction.awaitModalSubmit({
-				time: 1000 * 60,
-				filter
+
+		const response = await interaction.awaitModalSubmit({
+			time: 1000 * 60,
+			filter
+		}).catch(() => null);
+		if (!response) {
+			interaction.followUp({
+				content: `O modal expirou, tente novamente.`,
+				flags: ["Ephemeral"]
 			});
+			return;
+		}
 
-			const url = response.fields.getTextInputValue("url");
-			if (component.data.type === ComponentType.TextDisplay) {
-				board.editor.delete();
-				board.editor.addSection(component.data.content!, k.thumbnail({
-					url
-				}));
-			} else if (component.data.type === ComponentType.Section) {
-				(component as SectionBuilder).setThumbnailAccessory(k.thumbnail({
-					url
-				}));
-			}
+		const url = response.fields.getTextInputValue("url");
+		if (component.data.type === ComponentType.TextDisplay) {
+			board.editor.delete();
+			board.editor.addSection(component.data.content!, k.thumbnail({
+				url
+			}));
+		} else if (component.data.type === ComponentType.Section) {
+			(component as SectionBuilder).setThumbnailAccessory(k.thumbnail({
+				url
+			}));
+		}
 
-			const view = new BoardEditorView({
-				user: interaction.user,
-				editor: board
-			});
+		const view = new BoardEditorView({
+			user: interaction.user,
+			editor: board
+		});
 
-			await interaction.message.edit(view.render());
-			await response.reply({ content: "Você editou a thumbnail com sucesso.", flags: ["Ephemeral"] });
-		} catch (error) { console.error(error) }
+		await interaction.message.edit(view.render());
+		await response.reply({ content: "Você editou a thumbnail com sucesso.", flags: ["Ephemeral"] });
+
 	}
 });

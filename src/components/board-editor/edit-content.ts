@@ -36,26 +36,31 @@ export default createComponent({
 
 		const filter = (i: ModalSubmitInteraction) => i.customId === `bd_edit_content_modal` && i.user.id === interaction.user.id;
 
-		try {
-			const response = await interaction.awaitModalSubmit({
-				time: 1000 * 60,
-				filter
+		const response = await interaction.awaitModalSubmit({
+			time: 1000 * 60,
+			filter
+		}).catch(() => null);
+		if (!response) {
+			interaction.followUp({
+				content: `O modal expirou, tente novamente.`,
+				flags: ["Ephemeral"]
 			});
+			return;
+		}
 
-			const content = response.fields.getTextInputValue("content");
-			if (component.data.type === ComponentType.TextDisplay)
-				(component as TextDisplayBuilder).setContent(content);
-			else if (component.data.type === ComponentType.Section)
-				(component as SectionBuilder).spliceTextDisplayComponents(0, 1, k.text(content));
+		const content = response.fields.getTextInputValue("content");
+		if (component.data.type === ComponentType.TextDisplay)
+			(component as TextDisplayBuilder).setContent(content);
+		else if (component.data.type === ComponentType.Section)
+			(component as SectionBuilder).spliceTextDisplayComponents(0, 1, k.text(content));
 
-			const view = new BoardEditorView({
-				user: interaction.user,
-				editor: board
-			});
+		const view = new BoardEditorView({
+			user: interaction.user,
+			editor: board
+		});
 
-			await interaction.message.edit(view.render());
-			await response.reply({ content: "Você editou o conteudo com sucesso.", flags: ["Ephemeral"] });
-		} catch (error) { console.error(error) }
+		await interaction.message.edit(view.render());
+		await response.reply({ content: "Você editou o conteudo com sucesso.", flags: ["Ephemeral"] });
 	}
 });
 

@@ -40,7 +40,7 @@ export default createSubcommand({
 					case "checkbox": return k.label({
 						label: field.label,
 						// @ts-ignore
-						component: new CheckboxBuilder({ customId: field.key })
+						component: new CheckboxBuilder().setCustomId(field.key)
 					});
 					case "user": {
 						const menu = k.select.user({
@@ -132,10 +132,8 @@ export default createSubcommand({
 				const resolver = new BoardResolver(board, args);
 				const containers = resolver.resolve();
 				await response.reply({ components: [...containers], flags: ["IsComponentsV2"] });
-
-			} catch (error) { console.error(error) }
+			} catch { }
 		} else {
-
 			const resolver = new BoardResolver(board, {});
 			const containers = resolver.resolve();
 			await interaction.reply({ components: [...containers], flags: ["IsComponentsV2"] });

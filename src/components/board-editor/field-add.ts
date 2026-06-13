@@ -62,30 +62,36 @@ export default createComponent({
 
 		const filter = (i: ModalSubmitInteraction) => i.customId === `bd_field_add_modal` && i.user.id === interaction.user.id;
 
-		try {
-			const response = await interaction.awaitModalSubmit({
-				time: 1000 * 60,
-				filter
+		const response = await interaction.awaitModalSubmit({
+			time: 1000 * 60,
+			filter
+		}).catch(() => null);
+		if (!response) {
+			interaction.followUp({
+				content: `O modal expirou, tente novamente.`,
+				flags: ["Ephemeral"]
 			});
+			return;
+		}
 
-			const type = response.fields.getStringSelectValues(`bd_field_add_type_menu/${interaction.user.id}`)[0] as BoardFieldType;
-			const key = response.fields.getTextInputValue(`key`);
-			const label = response.fields.getTextInputValue(`label`);
+		const type = response.fields.getStringSelectValues(`bd_field_add_type_menu/${interaction.user.id}`)[0] as BoardFieldType;
+		const key = response.fields.getTextInputValue(`key`);
+		const label = response.fields.getTextInputValue(`label`);
 
-			board.fields.push({ type, key, label });
+		board.fields.push({ type, key, label });
 
-			const view = new BoardEditorView({
-				user: interaction.user,
-				editor: board
-			});
+		const view = new BoardEditorView({
+			user: interaction.user,
+			editor: board
+		});
 
-			await interaction.message.edit(view.render({
-				page: "edit-fields",
-				user: interaction.user,
-				editor: board
-			}));
-		  
-			await response.reply({ content: "Você adicionou o parâmetro com sucesso.", flags: ["Ephemeral"] });
-		} catch (error) { console.error(error) }
+		await interaction.message.edit(view.render({
+			page: "edit-fields",
+			user: interaction.user,
+			editor: board
+		}));
+
+		await response.reply({ content: "Você adicionou o parâmetro com sucesso.", flags: ["Ephemeral"] });
+
 	}
 });

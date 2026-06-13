@@ -75,26 +75,30 @@ export default createComponent({
 
 		const filter = (i: ModalSubmitInteraction) => i.customId === `bd_container_color_modal` && i.user.id === interaction.user.id;
 
-		try {
-			const response = await interaction.awaitModalSubmit({
-				time: 1000 * 60,
-				filter
+		const response = await interaction.awaitModalSubmit({
+			time: 1000 * 60,
+			filter
+		}).catch(() => null);
+		if (!response) {
+			interaction.followUp({
+				content: `O modal expirou, tente novamente.`,
+				flags: ["Ephemeral"]
 			});
+			return;
+		}
 
+		const selectedColorPreset = response.fields.getStringSelectValues(`bd_container_color_menu/${interaction.user.id}`)[0]!;
+		const hexColor = response.fields.getTextInputValue("hex_color");
+		board.select(board.cursor);
+		board.editor.setColor(hexColor || selectedColorPreset);
 
-			const selectedColorPreset = response.fields.getStringSelectValues(`bd_container_color_menu/${interaction.user.id}`)[0]!;
-			const hexColor = response.fields.getTextInputValue("hex_color");
-			board.select(board.cursor);
-			board.editor.setColor(hexColor || selectedColorPreset);
+		const view = new BoardEditorView({
+			user: interaction.user,
+			editor: board
+		});
 
-			const view = new BoardEditorView({
-				user: interaction.user,
-				editor: board
-			});
-
-			await interaction.message.edit(view.render());
-			await response.reply({ content: "Você editou a cor do container com sucesso.", flags: ["Ephemeral"] });
-		} catch (error) { console.error(error) }
+		await interaction.message.edit(view.render());
+		await response.reply({ content: "Você editou a cor do container com sucesso.", flags: ["Ephemeral"] });
 	}
 });
 

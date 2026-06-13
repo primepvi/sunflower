@@ -48,23 +48,29 @@ export default createComponent({
 
 		const filter = (i: ModalSubmitInteraction) => i.customId === `bd_gallery_remove_image_modal` && i.user.id === interaction.user.id;
 
-		try {
-			const response = await interaction.awaitModalSubmit({
-				time: 1000 * 60,
-				filter
+
+		const response = await interaction.awaitModalSubmit({
+			time: 1000 * 60,
+			filter
+		});
+		if (!response) {
+			interaction.followUp({
+				content: `O modal expirou, tente novamente.`,
+				flags: ["Ephemeral"]
 			});
+			return;
+		}
 
-			const selectedImages = response.fields.getStringSelectValues(`bd_gallery_remove_image_menu/${interaction.user.id}`);
-			for (const selectedImage of selectedImages)
-				component.spliceItems(parseInt(selectedImage!), 1);
+		const selectedImages = response.fields.getStringSelectValues(`bd_gallery_remove_image_menu/${interaction.user.id}`);
+		for (const selectedImage of selectedImages)
+			component.spliceItems(parseInt(selectedImage!), 1);
 
-			const view = new BoardEditorView({
-				user: interaction.user,
-				editor: board
-			});
+		const view = new BoardEditorView({
+			user: interaction.user,
+			editor: board
+		});
 
-			await interaction.message.edit(view.render());
-			await response.reply({ content: "Você removeu as imagens com sucesso.", flags: ["Ephemeral"] });
-		} catch (error) { console.error(error) }
+		await interaction.message.edit(view.render());
+		await response.reply({ content: "Você removeu as imagens com sucesso.", flags: ["Ephemeral"] });
 	}
 });

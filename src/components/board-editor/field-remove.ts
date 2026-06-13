@@ -46,28 +46,33 @@ export default createComponent({
 
 		const filter = (i: ModalSubmitInteraction) => i.customId === `bd_field_remove_modal` && i.user.id === interaction.user.id;
 
-		try {
-			const response = await interaction.awaitModalSubmit({
-				time: 1000 * 60,
-				filter
+		const response = await interaction.awaitModalSubmit({
+			time: 1000 * 60,
+			filter
+		}).catch(() => null);
+		if (!response) {
+			interaction.followUp({
+				content: `O modal expirou, tente novamente.`,
+				flags: ["Ephemeral"]
 			});
+			return;
+		}
 
-			const keys = response.fields.getStringSelectValues(`bd_field_remove_menu/${interaction.user.id}`);
-			for (const key of keys)
-				board.fields.splice(parseInt(key!), 1);
+		const keys = response.fields.getStringSelectValues(`bd_field_remove_menu/${interaction.user.id}`);
+		for (const key of keys)
+			board.fields.splice(parseInt(key!), 1);
 
-			const view = new BoardEditorView({
-				user: interaction.user,
-				editor: board
-			});
+		const view = new BoardEditorView({
+			user: interaction.user,
+			editor: board
+		});
 
-			await interaction.message.edit(view.render({
-				page: "edit-fields",
-				user: interaction.user,
-				editor: board
-			}));
+		await interaction.message.edit(view.render({
+			page: "edit-fields",
+			user: interaction.user,
+			editor: board
+		}));
 
-			await response.reply({ content: "Você removeu os parâmetros com sucesso.", flags: ["Ephemeral"] });
-		} catch (error) { console.error(error) }
+		await response.reply({ content: "Você removeu os parâmetros com sucesso.", flags: ["Ephemeral"] });
 	}
 });
