@@ -69,7 +69,7 @@ export default createSubcommand({
 						});
 					}
 					case "role": {
-						const menu = k.select.user({
+						const menu = k.select.role({
 							cid: field.key,
 							max: 1,
 							min: 1,
@@ -94,45 +94,49 @@ export default createSubcommand({
 
 			const filter = (i: ModalSubmitInteraction) => i.customId === `board_send_modal` && i.user.id === interaction.user.id;
 
-			try {
-				const response = await interaction.awaitModalSubmit({
-					time: 1000 * 60,
-					filter
+			const response = await interaction.awaitModalSubmit({
+				time: 1000 * 60,
+				filter
+			}).catch(() => null);
+			if (!response) {
+				interaction.followUp({
+					content: `O modal expirou, tente novamente.`,
+					flags: ["Ephemeral"]
 				});
+				return;
+			}
 
+			const args: Record<string, BoardArgumentInput> = Object.create({});
 
-				const args: Record<string, BoardArgumentInput> = Object.create({});
-
-				for (const field of board.fields) {
-					switch (field.type) {
-						case "text": {
-							args[field.key] = response.fields.getTextInputValue(field.key);
-							break;
-						}
-						case "checkbox": {
-							args[field.key] = response.fields.getCheckbox(field.key).toString();
-							break;
-						}
-						case "user": {
-							args[field.key] = response.fields.getSelectedUsers(field.key, true).toJSON()[0]!;
-							break;
-						}
-						case "channel": {
-							args[field.key] = response.fields.getSelectedChannels(field.key, true).toJSON()[0]! as GuildChannel;
-							break;
-						}
-						case "role": {
-							args[field.key] = response.fields.getSelectedRoles(field.key, true).toJSON()[0]! as Role;
-							break;
-						}
-
+			for (const field of board.fields) {
+				switch (field.type) {
+					case "text": {
+						args[field.key] = response.fields.getTextInputValue(field.key);
+						break;
 					}
-				}
+					case "checkbox": {
+						args[field.key] = response.fields.getCheckbox(field.key);
+						break;
+					}
+					case "user": {
+						args[field.key] = response.fields.getSelectedUsers(field.key, true).toJSON()[0]!;
+						break;
+					}
+					case "channel": {
+						args[field.key] = response.fields.getSelectedChannels(field.key, true).toJSON()[0]! as GuildChannel;
+						break;
+					}
+					case "role": {
+						args[field.key] = response.fields.getSelectedRoles(field.key, true).toJSON()[0]! as Role;
+						break;
+					}
 
-				const resolver = new BoardResolver(board, args);
-				const containers = resolver.resolve();
-				await response.reply({ components: [...containers], flags: ["IsComponentsV2"] });
-			} catch { }
+				}
+			}
+
+			const resolver = new BoardResolver(board, args);
+			const containers = resolver.resolve();
+			await response.reply({ components: [...containers], flags: ["IsComponentsV2"] });
 		} else {
 			const resolver = new BoardResolver(board, {});
 			const containers = resolver.resolve();

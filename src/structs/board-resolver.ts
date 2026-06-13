@@ -1,6 +1,6 @@
 import { ComponentType, ContainerBuilder, SectionBuilder, TextDisplayBuilder, type User, type GuildChannel, type Role } from "discord.js";
 import type { BoardData } from "../schemas/board.schema.js";
-export type BoardArgumentInput = Role | GuildChannel | User | string;
+export type BoardArgumentInput = Role | GuildChannel | User | string | boolean;
 
 export class BoardResolver {
 	public constructor(private board: BoardData, private args: Record<string, BoardArgumentInput>) { }
@@ -33,18 +33,18 @@ export class BoardResolver {
 		const input = this.args[field];
 		switch (fieldData.type) {
 			case "text": return input as string;
-			case "checkbox": return Boolean(input as string);
+			case "checkbox": return input ? "Verdadeiro" : "Falso";
 			case "user": {
 				const data = input as User;
-				return { id: data.id, name: data.username };
+				return { id: data.id, name: data.username, toString() { return `<@${this.id}>`; } };
 			}
 			case "channel": {
 				const data = input as GuildChannel;
-				return { id: data.id, name: data.name };
+				return { id: data.id, name: data.name, toString() { return `<#${this.id}>`; } };
 			}
 			case "role": {
 				const data = input as Role;
-				return { id: data.id, name: data.name };
+				return { id: data.id, name: data.name, toString() { return `<@&${this.id}>`; } };
 			}
 		}
 
