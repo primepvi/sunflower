@@ -1,0 +1,18 @@
+{
+  "$schema": "https://www.schemastore.org/tsconfig",
+  "_version": "26.0.0",
+  "compilerOptions": {
+    "lib": ["es2025", "ESNext.Collection", "ESNext.Temporal"],
+    "types": ["node"],
+    "module": "nodenext",
+    "target": "es2025",
+
+    "esModuleInterop": true,
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true,
+  }
+}
