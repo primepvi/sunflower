@@ -1,7 +1,8 @@
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, Collection, GatewayIntentBits } from "discord.js";
 import path from "node:path";
 import { readdirSync } from "node:fs";
 import type { EventData } from "../utils/create-event.js";
+import type { CommandData } from "../utils/create-command.js";
 
 export interface BotConfig {
 	token: string;
@@ -12,6 +13,7 @@ export interface BotConfig {
 export class Bot extends Client {
 	public declare token: string;
 	public prefix: string;
+	public commands: Collection<string, CommandData> = new Collection();
 
 	public constructor(config: BotConfig) {
 		super({ intents: config.intents });
@@ -21,6 +23,7 @@ export class Bot extends Client {
 	}
 
 	public async start() {
+		await this.loadCommands();
 		await this.loadEvents();
 		await super.login(this.token);
 	}
@@ -36,6 +39,19 @@ export class Bot extends Client {
 			const registerMethod = event.once ? "once" : "on";
 			super[registerMethod](event.name, event.execute);
 			console.log(`Event ${event.name} was loaded.`);
+		}
+	}
+
+	private async loadCommands() {
+		const files = readdirSync("src/commands", { recursive: true, withFileTypes: true })
+			.filter(d => d.isFile() && d.name.endsWith(".ts"));
+
+		for (const file of files) {
+			const filePath = path.resolve(file.parentPath, file.name);
+			const { default: command } = (await import(filePath)) as { default: CommandData };
+
+			this.commands.set(command.name, command);
+			console.log(`Command ${command.name} was loaded.`);
 		}
 	}
 }
