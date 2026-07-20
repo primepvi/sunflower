@@ -3,6 +3,7 @@ import path from "node:path";
 import { readdirSync } from "node:fs";
 import type { EventData } from "../utils/create-event.js";
 import type { CommandData } from "../utils/create-command.js";
+import type { SubCommandData } from "../utils/create-subcommand.js";
 
 export interface BotConfig {
 	token: string;
@@ -14,6 +15,7 @@ export class Bot extends Client {
 	public declare token: string;
 	public prefix: string;
 	public commands: Collection<string, CommandData> = new Collection();
+	public subCommands: Collection<string, SubCommandData> = new Collection();
 
 	public constructor(config: BotConfig) {
 		super({ intents: config.intents });
@@ -24,7 +26,9 @@ export class Bot extends Client {
 
 	public async start() {
 		await this.loadCommands();
+		await this.loadSubCommands();
 		await this.loadEvents();
+
 		await super.login(this.token);
 	}
 
@@ -44,7 +48,7 @@ export class Bot extends Client {
 
 	private async loadCommands() {
 		const files = readdirSync("src/commands", { recursive: true, withFileTypes: true })
-			.filter(d => d.isFile() && d.name.endsWith(".ts"));
+			.filter(d => d.isFile() && d.name.endsWith(".command.ts"));
 
 		for (const file of files) {
 			const filePath = path.resolve(file.parentPath, file.name);
@@ -52,6 +56,19 @@ export class Bot extends Client {
 
 			this.commands.set(command.name, command);
 			console.log(`Command ${command.name} was loaded.`);
+		}
+	}
+
+	private async loadSubCommands() {
+		const files = readdirSync("src/commands", { recursive: true, withFileTypes: true })
+			.filter(d => d.isFile() && d.name.endsWith(".subcommand.ts"));
+
+		for (const file of files) {
+			const filePath = path.resolve(file.parentPath, file.name);
+			const { default: command } = (await import(filePath)) as { default: SubCommandData };
+
+			this.subCommands.set(`${command.parent}_${command.name}`, command);
+			console.log(`SubCommand ${command.name} of Command ${command.parent} was loaded.`);
 		}
 	}
 }

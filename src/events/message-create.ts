@@ -42,13 +42,16 @@ export default createEvent({
 		const { args, flags } = parseArgs(rawArgs);
 
 		const command = bot.commands.get(commandName) || bot.commands.find(c => c.aliases.includes(commandName));
+		const subCommand = bot.subCommands.get(`${commandName}_${args[0]}`);
 
-		if (!command) {
+		if (subCommand) {
+			return await subCommand.execute(message, args, flags);
+		} else if (command) {
+			return await command.execute(message, args, flags);
+		} else {
 			return await message.reply({
 				content: "Comando não encontrado.",
 			});
 		}
-
-		await command.execute(message, args, flags);
 	}
 });
