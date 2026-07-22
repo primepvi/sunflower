@@ -1,0 +1,162 @@
+{
+  "icon_color_blue": {
+    "id": "1513603257631510650",
+    "name": "icon_color_blue",
+    "animated": false
+  },
+  "icon_color_grey": {
+    "id": "1513603259166883920",
+    "name": "icon_color_grey",
+    "animated": false
+  },
+  "icon_color_green": {
+    "id": "1513603260643147897",
+    "name": "icon_color_green",
+    "animated": false
+  },
+  "icon_color_red": {
+    "id": "1513603262639509604",
+    "name": "icon_color_red",
+    "animated": false
+  },
+  "icon_color_yellow": {
+    "id": "1513603264262836234",
+    "name": "icon_color_yellow",
+    "animated": false
+  },
+  "icon_color_purple": {
+    "id": "1513603266150273095",
+    "name": "icon_color_purple",
+    "animated": false
+  },
+  "icon_color_pink": {
+    "id": "1513603267727331488",
+    "name": "icon_color_pink",
+    "animated": false
+  },
+  "icon_color_orange": {
+    "id": "1513603269572956261",
+    "name": "icon_color_orange",
+    "animated": false
+  },
+  "icon_color_aqua": {
+    "id": "1513603271875494049",
+    "name": "icon_color_aqua",
+    "animated": false
+  },
+  "icon_color_white": {
+    "id": "1513603274224439306",
+    "name": "icon_color_white",
+    "animated": false
+  },
+  "icon_color_black": {
+    "id": "1513603275809882172",
+    "name": "icon_color_black",
+    "animated": false
+  },
+  "icon_color_emerald": {
+    "id": "1513603277550256189",
+    "name": "icon_color_emerald",
+    "animated": false
+  },
+  "icon_color_amber": {
+    "id": "1513603280033415258",
+    "name": "icon_color_amber",
+    "animated": false
+  },
+  "icon_color_indigo": {
+    "id": "1513603281941823729",
+    "name": "icon_color_indigo",
+    "animated": false
+  },
+  "icon_color_cyan": {
+    "id": "1513603283397116054",
+    "name": "icon_color_cyan",
+    "animated": false
+  },
+  "icon_color_rose": {
+    "id": "1513603285297139934",
+    "name": "icon_color_rose",
+    "animated": false
+  },
+  "icon_user": {
+    "id": "1518009211064422462",
+    "name": "icon_user",
+    "animated": false
+  },
+  "icon_color": {
+    "id": "1518009389221548072",
+    "name": "icon_color",
+    "animated": false
+  },
+  "icon_section": {
+    "id": "1518009552539357234",
+    "name": "icon_section",
+    "animated": false
+  },
+  "icon_ok": {
+    "id": "1518009738640756858",
+    "name": "icon_ok",
+    "animated": false
+  },
+  "icon_clone": {
+    "id": "1518010803268358236",
+    "name": "icon_clone",
+    "animated": false
+  },
+  "icon_container": {
+    "id": "1518011317678641333",
+    "name": "icon_container",
+    "animated": false
+  },
+  "icon_image": {
+    "id": "1518011470367948830",
+    "name": "icon_image",
+    "animated": false
+  },
+  "icon_edit_text": {
+    "id": "1518012057562120405",
+    "name": "icon_edit_text",
+    "animated": false
+  },
+  "icon_text_display": {
+    "id": "1518012484731015239",
+    "name": "icon_text_display",
+    "animated": false
+  },
+  "icon_separator": {
+    "id": "1518012674913603666",
+    "name": "icon_separator",
+    "animated": false
+  },
+  "icon_spacing": {
+    "id": "1518013093345759252",
+    "name": "icon_spacing",
+    "animated": false
+  },
+  "icon_opacity": {
+    "id": "1518013476679712848",
+    "name": "icon_opacity",
+    "animated": false
+  },
+  "icon_home": {
+    "id": "1518013645508841634",
+    "name": "icon_home",
+    "animated": false
+  },
+  "icon_trash": {
+    "id": "1518013802057171004",
+    "name": "icon_trash",
+    "animated": false
+  },
+  "icon_down": {
+    "id": "1518014368493604865",
+    "name": "icon_down",
+    "animated": false
+  },
+  "icon_up": {
+    "id": "1518014408629162054",
+    "name": "icon_up",
+    "animated": false
+  }
+}

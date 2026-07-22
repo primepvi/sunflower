@@ -4,6 +4,7 @@ import { readdirSync } from "node:fs";
 import type { EventData } from "../utils/create-event.js";
 import type { CommandData } from "../utils/create-command.js";
 import type { SubCommandData } from "../utils/create-subcommand.js";
+import { TwinDB } from "twin-db";
 
 export interface BotConfig {
 	token: string;
@@ -16,6 +17,7 @@ export class Bot extends Client {
 	public prefix: string;
 	public commands: Collection<string, CommandData> = new Collection();
 	public subCommands: Collection<string, SubCommandData> = new Collection();
+	public db = new TwinDB("database/db.json");
 
 	public constructor(config: BotConfig) {
 		super({ intents: config.intents });

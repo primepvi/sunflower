@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx --env-file=.env src/index.ts",
-    "dev:w": "tsx --env-file=.env --watch src/index.ts"
+    "dev:w": "tsx --env-file=.env --watch src/index.ts",
+    "load:emojis": "tsx --env-file=.env scripts/load-emojis.ts"
   },
   "keywords": [],
   "author": "primepvi",

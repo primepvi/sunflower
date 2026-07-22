@@ -1,2 +1,4 @@
 node_modules/
 .env
+emojis.json
+database/db.json

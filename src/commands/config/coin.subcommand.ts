@@ -1,18 +1,18 @@
 import type { Message } from "discord.js";
 import type { CommandFlags } from "../../utils/create-command.js";
 import { createSubCommand } from "../../utils/create-subcommand.js";
-import { db } from "../../database/index.js";
 import type { GuildModel } from "../../types/models.js";
+import { bot } from "../../bot.js";
 
 export default createSubCommand({
 	parent: "config",
 	name: "coin",
 	aliases: [],
 	execute(message: Message, args: string[], flags: CommandFlags) {
-		const guildData = db.get(message.guildId!) as GuildModel;
+		const guildData = bot.db.get(message.guildId!) as GuildModel;
 		if (flags.set) {
-			db.set(`${message.guildId}.coinName`, flags.name || guildData.coinName);
-			db.set(`${message.guildId}.coinEmoji`, flags.emoji || guildData.coinEmoji);
+			bot.db.set(`${message.guildId}.coinName`, flags.name || guildData.coinName);
+			bot.db.set(`${message.guildId}.coinEmoji`, flags.emoji || guildData.coinEmoji);
 			return message.reply(`> Setou legal.`);
 		}
 

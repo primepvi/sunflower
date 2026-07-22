@@ -2,7 +2,6 @@ import type { OmitPartialGroupDMChannel, Message } from "discord.js";
 import { createEvent } from "../utils/create-event.js";
 import { bot } from "../bot.js";
 import { parseArgs } from "../utils/parse-args.js";
-import { db } from "../database/index.js";
 import type { GuildMemberModel, GuildModel, UserModel } from "../types/models.js";
 
 export default createEvent({
@@ -12,25 +11,25 @@ export default createEvent({
 		if (!message.content.startsWith(bot.prefix) || !message.inGuild() || message.author.bot)
 			return;
 
-		const guildData = db.get(message.guildId) as GuildModel | null;
+		const guildData = bot.db.get(message.guildId) as GuildModel | null;
 		if (!guildData) {
-			db.set(message.guildId, {
+			bot.db.set(message.guildId, {
 				id: message.guildId,
 				coinName: "Moeda",
 				coinEmoji: ":coin:"
 			} satisfies GuildModel);
 		}
 
-		const userData = db.get(message.author.id) as UserModel | null;
+		const userData = bot.db.get(message.author.id) as UserModel | null;
 		if (!userData) {
-			db.set(message.author.id, {
+			bot.db.set(message.author.id, {
 				id: message.author.id
 			} satisfies UserModel);
 		}
 
-		const guildMemberData = db.get(`${message.guildId}.members.${message.author.id}`);
+		const guildMemberData = bot.db.get(`${message.guildId}.members.${message.author.id}`);
 		if (!guildMemberData) {
-			db.set(`${message.guildId}.members.${message.author.id}`, {
+			bot.db.set(`${message.guildId}.members.${message.author.id}`, {
 				userId: message.author.id,
 				guildId: message.guildId,
 				coins: 100
