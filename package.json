@@ -26,6 +26,6 @@
   },
   "dependencies": {
     "discord.js": "^14.27.0",
-    "twin-db": "^2.0.0"
+    "twin-db": "^2.1.1"
   }
 }

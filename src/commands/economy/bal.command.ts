@@ -8,7 +8,7 @@ export default createCommand({
 	name: "bal",
 	aliases: ["balance", "atm"],
 	execute(message: Message, args: string[], flags: Record<string, string>) {
-		const guildData = bot.db.get(message.guildId!) as GuildModel;
+		const guildData = bot.db.get<GuildModel>(message.guildId!)!;
 
 		const rawUserId = flags.user || flags.u || message.mentions.users.first()?.id || message.author.id;
 		const userId = sanitizeMention(rawUserId);

@@ -11,7 +11,7 @@ export default createEvent({
 		if (!message.content.startsWith(bot.prefix) || !message.inGuild() || message.author.bot)
 			return;
 
-		const guildData = bot.db.get(message.guildId) as GuildModel | null;
+		const guildData = bot.db.get<GuildModel>(message.guildId);
 		if (!guildData) {
 			bot.db.set(message.guildId, {
 				id: message.guildId,
@@ -20,7 +20,7 @@ export default createEvent({
 			} satisfies GuildModel);
 		}
 
-		const userData = bot.db.get(message.author.id) as UserModel | null;
+		const userData = bot.db.get<UserModel>(message.author.id);
 		if (!userData) {
 			bot.db.set(message.author.id, {
 				id: message.author.id
